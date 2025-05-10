@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/styles_staff.css')}}"/>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <title>staff</title>
+</head>
+<body>
+    <nav id="sidebar">
+        <ul>
+          <li>
+            <span class="logo">Airport Dashboard</span>
+            <button onclick=toggleSidebar() id="toggle-btn">
+              <img src="{{ url_for('static', filename='images/left.png') }}" alt="icon">
+
+            </button>
+          </li>
+          <li class="active">
+            <a href="/camera">
+                <img src="{{ url_for('static', filename='images/camera.png') }}" alt="icon">
+
+              <span>Camera</span>
+            </a>
+          </li>
+          <li>
+            <a href="/dashboard">
+              <img src="{{ url_for('static', filename='images/dash.png') }}" alt="icon">
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/stats">
+              <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+              <span>Stats</span>
+            </a>
+          </li>
+          
+        </ul>
+      </nav>
+      <main class="z">
+        <div class="card1">
+          <video autoplay muted loop playsinline >
+            <source src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
+            
+          </video>
+        </div>
+        <div class="card2">
+          <video autoplay muted loop playsinline>
+            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
+          </video>
+        </div>
+        <div class="card3">
+          <video autoplay muted loop playsinline>
+            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
+            
+          </video>
+        </div>
+        <div class="card4">
+         <p>les alertes ici et apres je les stock dans la base de donnees. on peut faire genre une check liste si </p>
+        </div>
+        <div class="card5">
+          <video autoplay muted loop playsinline>
+            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
+          </video>
+        </div>
+        <div class="card6">
+          <video autoplay muted loop playsinline>
+            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
+          </video>
+        </div>
+        <div class="card7">
+          <video autoplay muted loop playsinline>
+            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
+          </video>
+        </div>
+      </main>
+
+      <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
