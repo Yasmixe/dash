@@ -484,3 +484,57 @@ function update_LineAlertesParZone(data_JSON) {
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('.card');
+  const modal = document.querySelector('.modal');
+  const modalImg = document.getElementById("annotated-stream");
+  const modalTitle = document.getElementById('modal-title');
+  const modalDescription = document.getElementById('modal-description');
+  const detectionsList = document.getElementById('detections-list');
+  const closeBtn = document.querySelector('.close2');
+
+  cards.forEach(card => {
+    card.addEventListener('click', async () => {
+      const cameraId = card.getAttribute('data-camera-id');
+      const title = card.querySelector('h3').textContent;
+      const description = card.querySelector('.description').textContent;
+
+      modalImg.src = `/static/video/video${cameraId}.mp4`;
+      modalTitle.textContent = title;
+      modalDescription.textContent = description;
+
+      await fetchDetections(cameraId); // Appelle correctement
+      modal.style.display = 'flex';
+    });
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+    modalImg.src = '';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      modalImg.src = '';
+    }
+  });
+});
+
+async function fetchDetections(cameraId) {
+  const response = await fetch('/predict_video', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ video_path: `/static/video/video${cameraId}.mp4` })
+  });
+
+  const data = await response.json();
+  const list = document.getElementById("detections-list");
+  list.innerHTML = '';
+  for (const className in data.class_counts) {
+    const li = document.createElement("li");
+    li.textContent = `${className}: ${data.class_counts[className]}`;
+    list.appendChild(li);
+  }
+}
