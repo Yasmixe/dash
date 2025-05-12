@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/styles_staff.css')}}"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/styles_camera.css')}}"/>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
     <title>staff</title>
@@ -41,41 +41,79 @@
         </ul>
       </nav>
       <main class="z">
-        <div class="card1">
-          <video autoplay muted loop playsinline >
-            <source src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
-            
-          </video>
+         <div class="cards-container">
+        <!-- Card 1 -->
+        <div class="card" data-zone="Zone A" data-camera-id="1">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 1</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
         </div>
-        <div class="card2">
-          <video autoplay muted loop playsinline>
-            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
-          </video>
+
+        <!-- Répétez pour les 6 cartes (modifiez data-zone et le contenu) -->
+        <!-- Card 2 -->
+        <div class="card" data-zone="Zone B" data-camera-id="2">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 2</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
         </div>
-        <div class="card3">
-          <video autoplay muted loop playsinline>
-            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
-            
-          </video>
+        <div class="card" data-zone="Zone C" data-camera-id="3">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 3</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
         </div>
-        <div class="card4">
-         <p>les alertes ici et apres je les stock dans la base de donnees. on peut faire genre une check liste si </p>
+        <div class="card" data-zone="Zone D" data-camera-id="4">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 4</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
         </div>
-        <div class="card5">
-          <video autoplay muted loop playsinline>
-            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
-          </video>
+        <div class="card" data-zone="Zone E" data-camera-id="5">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 5</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
         </div>
-        <div class="card6">
-          <video autoplay muted loop playsinline>
-            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
-          </video>
+        <div class="card" data-zone="Zone F" data-camera-id="6">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 6</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
         </div>
-        <div class="card7">
-          <video autoplay muted loop playsinline>
-            <source  src="{{ url_for('static', filename=video_path) }}" type="video/mp4">
-          </video>
-        </div>
+        
+    </div>
+
+   <!-- Modal -->
+<div class="modal">
+  <span class="close2">&times;</span>
+  <img id="annotated-stream">
+  <div class="modal-content">
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
+    <ul id="detections-list"></ul>
+  </div>
+</div>
+
       </main>
 
       <script src="{{ url_for('static', filename='js/script.js') }}"></script>
