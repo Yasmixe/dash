@@ -17,11 +17,10 @@ import threading
 from IPython import display
 display.clear_output()
 import ultralytics
-ultralytics.checks()
 import supervision as sv
 import numpy as np
 
-model = YOLO("yolov8x.pt")
+model = YOLO("best_model_last_images.pt")
 app = Flask(__name__)
 #-----------------------------------------connection mysql-flask------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.config["MYSQL_DATABASE_HOST"] = "localhost"
@@ -338,9 +337,63 @@ sv.process_video(
     target_path=TARGET_VIDEO_PATH,
     callback=callback
 )'''
+
+@app.route('/predict_video', methods=['POST'])
+def predict_video():
+    data = request.get_json()
+    video_path = data['video_path']
+
+    # Corriger le chemin pour matcher la vidéo réellement utilisée
+    full_video_path = os.path.join(os.getcwd(), video_path.lstrip('/'))
+
+    if not os.path.exists(full_video_path):
+        return jsonify({'error': f'Video not found: {full_video_path}'}), 404
+
+    cap = cv2.VideoCapture(full_video_path)
+    detected_objects = []
+    frame_count = 0
+
+    while True:
+        ret, frame = cap.read()
+        if not ret or frame_count >= 5:
+            break
+
+        results = model(frame)
+        boxes = results[0].boxes
+
+        for i in range(len(boxes)):
+            box = boxes[i]
+            class_id = int(box.cls[0])
+            detected_objects.append({
+                'frame': frame_count,
+                'xmin': float(box.xyxy[0][0]),
+                'ymin': float(box.xyxy[0][1]),
+                'xmax': float(box.xyxy[0][2]),
+                'ymax': float(box.xyxy[0][3]),
+                'confidence': float(box.conf[0]),
+                'class_id': class_id,
+                'class_name': results[0].names[class_id]
+            })
+
+        frame_count += 1
+
+    cap.release()
+
+    class_counts = {}
+    for obj in detected_objects:
+        name = obj['class_name']
+        class_counts[name] = class_counts.get(name, 0) + 1
+
+    return jsonify({
+        'video_name': os.path.basename(video_path),
+        'detections': detected_objects,
+        'class_counts': class_counts
+    })
+
 @app.route('/camera')
-def getdata():
-   return render_template("camera.html", video_path="images/resultat_vehicule.mp4")
+def camera_view():
+    return render_template("camera.html")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
