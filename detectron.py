@@ -16,16 +16,17 @@ if __name__ == '__main__':
                                                                                   
     cfg = get_cfg()
 
-    cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
+    cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/retinanet_R_50_FPN_3x.yaml"))
     cfg.DATASETS.TRAIN = ("my_dataset_train",)
     cfg.DATASETS.TEST = ("my_dataset_val",)
     cfg.DATALOADER.NUM_WORKERS = 0
-    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
+    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/retinanet_R_50_FPN_3x.yaml")
     cfg.SOLVER.IMS_PER_BATCH = 2
     cfg.SOLVER.BASE_LR = 0.00025
-    cfg.SOLVER.MAX_ITER = 1000  # Nombre d'itérations
-    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 64
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2 
+    cfg.SOLVER.MAX_ITER = 5000  # Nombre d'itérations
+    cfg.MODEL.RETINANET.SCORE_THRESH_TEST = 0.5
+    cfg.MODEL.RETINANET.NUM_CLASSES = 2
+
 
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)

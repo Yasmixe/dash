@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>zone</title>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/styles_zones.css')}}"/>
+  <script type="text/javascript" src="app.js" defer></script>
+</head>
+<body>
+  <nav id="sidebar">
+    <ul>
+      <li>
+        <span class="logo">Airport Dashboard</span>
+        <button onclick=toggleSidebar() id="toggle-btn">
+          <img src="{{ url_for('static', filename='images/left.png') }}" alt="icon">
+
+        </button>
+      </li>
+      <li class="active">
+        <a href="/camera">
+            <img src="{{ url_for('static', filename='images/camera.png') }}" alt="icon">
+
+          <span>Camera</span>
+        </a>
+      </li>
+      <li>
+        <a href="/dashboard">
+          <img src="{{ url_for('static', filename='images/dash.png') }}" alt="icon">
+          <span>Dashboard</span>
+        </a>
+      </li>
+     
+      
+      <li>
+        <a href="/stats">
+          <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+          <span>stats</span>
+        </a>
+      </li>
+      
+    </ul>
+  </nav>
+  <main>
+    <div class="container">
+        <video autoplay loop muted>
+        <source  src="{{ url_for('static', filename='video/pile.mp4') }}" type="video/mp4" width="200px" hight="200px">
+        </video>
+        <video autoplay loop muted>
+        <source  src="{{ url_for('static', filename='video/pile2.mp4') }}" type="video/mp4" width="200px" hight="200px">
+        </video>
+    </div>
+    
+  </main>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
