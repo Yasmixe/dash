@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YOLO + Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/styles_camera.css')}}"/>
+    <style>
+        .alert {
+            color: white;
+            background-color: #f44336;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none; /* Caché par défaut */
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+    <ul>
+      <li>
+        <span class="logo">Airport Dashboard</span>
+        <button onclick=toggleSidebar() id="toggle-btn">
+          <img src="{{ url_for('static', filename='images/left.png') }}" alt="icon">
+
+        </button>
+      </li>
+      <li class="active">
+        <a href="/camera">
+            <img src="{{ url_for('static', filename='images/camera.png') }}" alt="icon">
+
+          <span>Camera</span>
+        </a>
+      </li>
+      <li>
+        <a href="/dashboard">
+          <img src="{{ url_for('static', filename='images/dash.png') }}" alt="icon">
+          <span>Dashboard</span>
+        </a>
+      </li>
+     
+      
+      <li>
+        <a href="/stats">
+          <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+          <span>stats</span>
+        </a>
+      </li>  
+      <li>
+        <a href="/zoneA">
+          <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+          <span>Zone A</span>
+        </a>
+      </li>  
+      <li>
+        <a href="/zoneB">
+          <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+          <span>Zone B</span>
+        </a>
+      </li>  
+      <li>
+        <a href="/zoneC">
+          <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+          <span>Zone C</span>
+        </a>
+      </li>  
+      <li>
+        <a href="/zoneD">
+          <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+          <span>zone D</span>
+        </a>
+      </li>  
+    </ul>
+  </nav>
+    <main>
+    <div class="container">
+    <h2>Vidéo avec détection</h2>
+        <img src="{{ url_for('video_feedC') }}" alt="Video Zone C" width="600"/>
+
+    <p id="alertMessage" class="alert"></p>
+    <h2>Nombre de chariots détectés</h2>
+    <canvas id="chart" width="800" height="400"></canvas>
+    </div>
+  </main>
+
+   <script>
+        const ctx = document.getElementById('chart').getContext('2d');
+        const alertElement = document.getElementById('alertMessage');
+        const data = {
+            labels: [],
+            datasets: [{
+                label: 'Nombre de chariots',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Temps (s)' } },
+                    y: { title: { display: true, text: 'Chariots détectés' }, beginAtZero: true }
+                }
+            }
+        };
+        
+        const chart = new Chart(ctx, config);
+
+        async function refresh() {
+            const res = await fetch('/detection_dataC');
+            const json = await res.json();
+
+            json.forEach(item => {
+                const t = item.time.toFixed(1);
+                if (!data.labels.includes(t)) {
+                    data.labels.push(t);
+                    data.datasets[0].data.push(item.count);
+
+                    // Afficher/cacher l'alerte
+                    if (item.alert) {
+    alertElement.textContent = item.message;
+    alertElement.style.display = 'block';
+} else {
+    alertElement.style.display = 'none';
+}
+                }
+            });
+
+            // Limiter le nombre de points affichés
+            if (data.labels.length > 50) {
+                data.labels.shift();
+                data.datasets[0].data.shift();
+            }
+
+            chart.update();
+        }
+
+        setInterval(refresh, 1000);
+    </script>
+</body>
+</html>

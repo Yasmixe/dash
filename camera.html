@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/styles_camera.css')}}"/>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <title>staff</title>
+</head>
+<body>
+    <nav id="sidebar">
+        <ul>
+          <li>
+            <span class="logo">Airport Dashboard</span>
+            <button onclick=toggleSidebar() id="toggle-btn">
+              <img src="{{ url_for('static', filename='images/left.png') }}" alt="icon">
+
+            </button>
+          </li>
+          <li class="active">
+            <a href="/camera">
+                <img src="{{ url_for('static', filename='images/camera.png') }}" alt="icon">
+
+              <span>Camera</span>
+            </a>
+          </li>
+          <li>
+            <a href="/dashboard">
+              <img src="{{ url_for('static', filename='images/dash.png') }}" alt="icon">
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/stats">
+              <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+              <span>Stats</span>
+            </a>
+          </li>
+          
+        </ul>
+      </nav>
+      <main class="z">
+         <div class="cards-container">
+        <!-- Card 1 -->
+        <div class="card" data-zone="Zone A" data-camera-id="1">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 1</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
+        </div>
+
+        <!-- Répétez pour les 6 cartes (modifiez data-zone et le contenu) -->
+        <!-- Card 2 -->
+        <div class="card" data-zone="Zone B" data-camera-id="2">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 2</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
+        </div>
+        <div class="card" data-zone="Zone C" data-camera-id="3">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 3</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
+        </div>
+        <div class="card" data-zone="Zone D" data-camera-id="4">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 4</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
+        </div>
+        <div class="card" data-zone="Zone E" data-camera-id="5">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 5</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
+        </div>
+        <div class="card" data-zone="Zone F" data-camera-id="6">
+            <video autoplay loop muted>
+                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+            </video>
+            <div class="card-info">
+                <h3>Camera 6</h3>
+                <p class="description">Cliquer ici pour en savoir plus</p>
+            </div>
+        </div>
+        
+    </div>
+
+   <!-- Modal -->
+<div class="modal">
+  <span class="close2">&times;</span>
+  <img id="annotated-stream">
+  <div class="modal-content">
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
+    <ul id="detections-list"></ul>
+  </div>
+</div>
+
+      </main>
+
+      <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar</title>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/styles_camera.css')}}"/>
+  <script type="text/javascript" src="app.js" defer></script>
+</head>
+<body>
+  <nav id="sidebar">
+    <ul>
+      <li>
+        <span class="logo">Airport Dashboard</span>
+        <button onclick=toggleSidebar() id="toggle-btn">
+          <img src="{{ url_for('static', filename='images/left.png') }}" alt="icon">
+
+        </button>
+      </li>
+      <li class="active">
+        <a href="/camera">
+            <img src="{{ url_for('static', filename='images/camera.png') }}" alt="icon">
+
+          <span>Camera</span>
+        </a>
+      </li>
+      <li>
+        <a href="/dashboard">
+          <img src="{{ url_for('static', filename='images/dash.png') }}" alt="icon">
+          <span>Dashboard</span>
+        </a>
+      </li>
+     
+      
+      <li>
+        <a href="/stats">
+          <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+          <span>stats</span>
+        </a>
+      </li>
+      
+    </ul>
+  </nav>
+  <main>
+    <div class="container">
+      <h2>stats</h2>
+      <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Veritatis porro iure quaerat aliquam! Optio dolorum in eum provident, facilis error repellendus excepturi enim dolor deleniti adipisci consectetur doloremque, unde maiores odit sapiente. Atque ab necessitatibus laboriosam consequatur eius similique, ex dolorum eum eaque sequi id veritatis voluptates perspiciatis, cupiditate pariatur.</p>
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

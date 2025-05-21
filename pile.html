@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Surveillance des Piles de Chariots</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { padding: 20px; }
+        canvas { max-height: 400px; }
+        table { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>📊 Évolution des piles de chariots</h2>
+    <canvas id="pileChart"></canvas>
+
+    <h3 class="mt-5">🚨 Alertes</h3>
+    <table class="table table-bordered table-striped table-sm" id="alertesTable">
+        <thead>
+            <tr>
+                <th>Zone</th>
+                <th>Heure</th>
+                <th>Niveau</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const colors = {
+            'A': 'red', 'B': 'blue', 'C': 'green',
+            'D': 'orange', 'E': 'purple', 'F': 'brown'
+        };
+
+        const ctx = document.getElementById('pileChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 60}, (_, i) => i.toString()),
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                animation: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Chariots restants' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Dernières minutes' }
+                    }
+                }
+            }
+        });
+
+        async function fetchData() {
+            const res = await fetch('/data');
+            const data = await res.json();
+
+            // Mise à jour du graphique
+            chart.data.datasets = Object.keys(data.piles).map(zone => ({
+                label: `Zone ${zone}`,
+                data: data.piles[zone],
+                borderColor: colors[zone],
+                fill: false,
+                tension: 0.1
+            }));
+            chart.update();
+
+            // Mise à jour du tableau d'alertes
+            const tbody = document.querySelector('#alertesTable tbody');
+            tbody.innerHTML = '';
+            data.alertes.forEach(a => {
+                const row = `<tr class="${a.Niveau === 'Critique' ? 'table-danger' : 'table-warning'}">
+                    <td>${a.Zone}</td>
+                    <td>${a.Heure}</td>
+                    <td>${a.Niveau}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        fetchData();
+        setInterval(fetchData, 60000); // Chaque minute
+    </script>
+</body>
+</html>

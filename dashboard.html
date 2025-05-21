@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/styles_dashboard.css')}}"/>
+  
+</head>
+<body>
+  <nav id="sidebar">
+    <ul>
+      <li>
+        <span class="logo">Airport Dashboard</span>
+        <button onclick=toggleSidebar() id="toggle-btn">
+          <img src="{{ url_for('static', filename='images/left.png') }}" alt="icon">
+
+        </button>
+      </li>
+      <li class="active">
+        <a href="/camera">
+            <img src="{{ url_for('static', filename='images/camera.png') }}" alt="icon">
+
+          <span>Camera</span>
+        </a>
+      </li>
+      <li>
+        <a href="/dashboard">
+          <img src="{{ url_for('static', filename='images/dash.png') }}" alt="icon">
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="/stats">
+          <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
+          <span>Stats</span>
+        </a>
+      </li>
+      
+    </ul>
+  </nav>
+  <main>
+    <div class="calendar-container">
+      <!-- Sidebar -->
+      <aside class="sidebar2">
+        <div class="profile">
+          <h3>Calendar</h3>
+          <p>All data history</p>
+        </div>
+        <div class="calendar-mini">
+          <div class="mini-calendar-header">
+            <button class="nav-btn prev-month">&lt;</button>
+            <h4 id="mini-calendar-month">May 2025</h4>
+            <button class="nav-btn next-month">&gt;</button>
+          </div>
+          <table id="mini-calendar">
+            <thead>
+              <tr>
+                <th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th><th>Su</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Remplis dynamiquement -->
+            </tbody>
+          </table>
+        </div>
+      </aside>
+    
+      <!-- Main content -->
+      <main class="calendar-main">
+        <div class="calendar-header">
+          <div class="main-calendar-header">
+            <button class="nav-btn prev-main">&lt;</button>
+            <h2 id="main-calendar-month">May, 2025</h2>
+            <br>
+            <button class="nav-btn next-main">&gt;</button>
+          </div>
+          <div class="date-selector">
+            <input type="date" id="custom-date-input" value="2025-05-17">
+            <button id="go-to-date-btn">Aller à la date</button>
+          </div>
+          
+         
+          <div class="days-row" id="days-row">
+            <!-- Remplis dynamiquement -->
+          </div>
+        </div>
+    
+       <div class="gridcharts">
+        <div class="cardcontent1">
+          
+          <canvas id="doughnut-chart" height="100" width="100"></canvas>
+
+        </div>
+        <div class="cardcontent2">
+        <canvas id="bar-chart" height="100" width="100"></canvas>
+          
+          
+        </div>
+        <div class="cardcontent3">
+          
+          <canvas id="line-chart" height="100" width="100"></canvas>
+
+        </div>
+
+        <div class="cardcontent4">
+          <div id="top-zone-vide-info" ></div>
+
+        </div>
+        <div class="cardcontent5">
+          <!--  <canvas id="bar-chart" height="220" width="120"></canvas>  -->
+          
+         <canvas id="bar-chart2" ></canvas>
+        
+       </div>
+       <div class="cardcontent6">
+       <!--  <canvas id="bar-chart" height="220" width="120"></canvas>  -->
+       
+      <p>ici donnee sur la pile </p>
+
+     </div>
+      </main>
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
