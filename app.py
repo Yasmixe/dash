@@ -344,79 +344,79 @@ def camera_view():
 #------------------------------------------------------------------------------------------Zone A----------------------------------------------------------------------------------------------
 
 video_path_A = r'C:\Users\yasmi\Documents\dash\static\video\zoneA.mp4'
-cap = cv2.VideoCapture(video_path_A)
+cap_A = cv2.VideoCapture(video_path_A)
 
-fps = cap.get(cv2.CAP_PROP_FPS)
-frame_index = 0
-tracker = sv.ByteTrack()
+fps_A = cap_A.get(cv2.CAP_PROP_FPS)
+frame_index_A = 0
+tracker_A = sv.ByteTrack()
 
-box_annotator = sv.BoundingBoxAnnotator()
-label_annotator = sv.LabelAnnotator()
-trace_annotator = sv.TraceAnnotator()
+box_annotator_A = sv.BoundingBoxAnnotator()
+label_annotator_A = sv.LabelAnnotator()
+trace_annotator_A = sv.TraceAnnotator()
 
-detection_queue = Queue()
-initial_count = None          # mémorise le nombre de chariots au t = 0 s
+detection_queue_A = Queue()
+initial_count_A = None          # mémorise le nombre de chariots au t = 0 s
 
 # Nouvelle variable pour l'agrégation
-last_interval = -1
+last_interval_A = -1
 def generate_framesA():
-    global frame_index, last_interval, initial_count
+    global frame_index_A, last_interval_A, initial_count_A
 
-    while cap.isOpened():
-        success, frame = cap.read()
+    while cap_A.isOpened():
+        success, frame = cap_A.read()
         if not success:
             break
 
-        frame_index += 1
-        results = model(frame)[0]
+        frame_index_A += 1
+        results_A = model(frame)[0]
 
-        detections = sv.Detections.from_ultralytics(results)
+        detections = sv.Detections.from_ultralytics(results_A)
         detections = detections[detections.confidence > 0.4]
-        detections = tracker.update_with_detections(detections)
+        detections = tracker_A.update_with_detections(detections)
         
         # nombre de chariots détectés sur cette frame
-        chariot_count = sum(
-            1 for cid in detections.class_id if results.names[cid].lower() == "0"
+        chariot_count_A = sum(
+            1 for cid in detections.class_id if results_A.names[cid].lower() == "0"
         )
         
         # Initialisation du comptage
        # Initialisation du comptage
-        if initial_count is None and chariot_count > 0:
-            initial_count = chariot_count
-            print(f"[INFO] Initial count fixé à {initial_count}")
+        if initial_count_A is None and chariot_count_A > 0:
+            initial_count_A = chariot_count_A
+            print(f"[INFO] Initial count fixé à {initial_count_A}")
 
          # ---------- calcul de l'alerte ----------
         alert = False
         alert_message = ""
-        if chariot_count <= initial_count*0.5:
+        if chariot_count_A <= initial_count_A*0.5:
             alert = True
-            alert_message = f"Alerte Alerte: pile presque vide ! Il reste {chariot_count} chariot{'s' if chariot_count > 1 else ''}."
+            alert_message = f"Alerte Alerte: pile presque vide ! Il reste {chariot_count_A} chariot{'s' if chariot_count_A > 1 else ''}."
             print(alert_message)
 
         labels = [
-            f"#{tracker_id} {results.names[class_id]}"
+            f"#{tracker_id} {results_A.names[class_id]}"
             for class_id, tracker_id in zip(detections.class_id, detections.tracker_id)
         ]
 
-        frame = box_annotator.annotate(frame, detections)
-        frame = label_annotator.annotate(frame, detections, labels)
-        frame = trace_annotator.annotate(frame, detections)
+        frame = box_annotator_A.annotate(frame, detections)
+        frame = label_annotator_A.annotate(frame, detections, labels)
+        frame = trace_annotator_A.annotate(frame, detections)
 
         # Temps vidéo en secondes
-        video_time = round(frame_index / fps, 2)
-        current_interval = int(video_time // 5)
+        video_time_A = round(frame_index_A / fps_A, 2)
+        current_interval_A = int(video_time_A // 5)
 
-        if current_interval != last_interval:
+        if current_interval_A != last_interval_A:
             # on met aussi le flag d'alerte dans la queue
-           detection_queue.put({"time": video_time, "count": chariot_count, "alert": alert, "message": alert_message})
+           detection_queue_A.put({"time": video_time_A, "count": chariot_count_A, "alert": alert, "message": alert_message})
 
-           last_interval = current_interval
+           last_interval_A = current_interval_A
 
-        ret, buffer = cv2.imencode('.jpg', frame)
-        frame_bytes = buffer.tobytes()
+        ret_A, buffer_A = cv2.imencode('.jpg', frame)
+        frame_bytes_A = buffer_A.tobytes()
 
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes_A + b'\r\n')
     
 @app.route('/video_feedA')
 def video_feedA():
@@ -425,86 +425,86 @@ def video_feedA():
 
 @app.route('/detection_dataA')
 def detection_dataA():
-    data = []
-    while not detection_queue.empty():
-        data.append(detection_queue.get())
-    return jsonify(data)   
+    dataA = []
+    while not detection_queue_A.empty():
+        dataA.append(detection_queue_A.get())
+    return jsonify(dataA)   
 #----------------------------------------------------------------------
 
 video_path_B = r'C:\Users\yasmi\Documents\dash\static\video\zoneB.mp4'
-cap = cv2.VideoCapture(video_path_B)
+cap_B = cv2.VideoCapture(video_path_B)
 
-fps = cap.get(cv2.CAP_PROP_FPS)
-frame_index = 0
-tracker = sv.ByteTrack()
+fps_B = cap_B.get(cv2.CAP_PROP_FPS)
+frame_index_B = 0
+tracker_B = sv.ByteTrack()
 
-box_annotator = sv.BoundingBoxAnnotator()
-label_annotator = sv.LabelAnnotator()
-trace_annotator = sv.TraceAnnotator()
+box_annotator_B = sv.BoundingBoxAnnotator()
+label_annotator_B = sv.LabelAnnotator()
+trace_annotator_B = sv.TraceAnnotator()
 
-detection_queue = Queue()
-initial_count = None          # mémorise le nombre de chariots au t = 0 s
+detection_queue_B = Queue()
+initial_count_B = None          # mémorise le nombre de chariots au t = 0 s
 
 # Nouvelle variable pour l'agrégation
-last_interval = -1
+last_interval_B = -1
 def generate_framesB():
-    global frame_index, last_interval, initial_count
+    global frame_index_B, last_interval_B, initial_count_B
 
-    while cap.isOpened():
-        success, frame = cap.read()
+    while cap_B.isOpened():
+        success, frame = cap_B.read()
         if not success:
             break
 
-        frame_index += 1
-        results = model(frame)[0]
+        frame_index_B += 1
+        results_B = model(frame)[0]
 
-        detections = sv.Detections.from_ultralytics(results)
+        detections = sv.Detections.from_ultralytics(results_B)
         detections = detections[detections.confidence > 0.4]
-        detections = tracker.update_with_detections(detections)
+        detections = tracker_B.update_with_detections(detections)
         
         # nombre de chariots détectés sur cette frame
-        chariot_count = sum(
-            1 for cid in detections.class_id if results.names[cid].lower() == "0"
+        chariot_count_B = sum(
+            1 for cid in detections.class_id if results_B.names[cid].lower() == "0"
         )
         
         # Initialisation du comptage
        # Initialisation du comptage
-        if initial_count is None and chariot_count > 0:
-            initial_count = chariot_count
-            print(f"[INFO] Initial count fixé à {initial_count}")
+        if initial_count_B is None and chariot_count_B > 0:
+            initial_count_B = chariot_count_B
+            print(f"[INFO] Initial count fixé à {initial_count_B}")
 
          # ---------- calcul de l'alerte ----------
         alert = False
         alert_message = ""
-        if chariot_count <= initial_count*0.5:
+        if chariot_count_B <= initial_count_B*0.5:
             alert = True
-            alert_message = f"Alerte Alerte: pile presque vide ! Il reste {chariot_count} chariot{'s' if chariot_count > 1 else ''}."
+            alert_message = f"Alerte Alerte: pile presque vide ! Il reste {chariot_count_B} chariot{'s' if chariot_count_B > 1 else ''}."
             print(alert_message)
 
         labels = [
-            f"#{tracker_id} {results.names[class_id]}"
+            f"#{tracker_id} {results_B.names[class_id]}"
             for class_id, tracker_id in zip(detections.class_id, detections.tracker_id)
         ]
 
-        frame = box_annotator.annotate(frame, detections)
-        frame = label_annotator.annotate(frame, detections, labels)
-        frame = trace_annotator.annotate(frame, detections)
+        frame = box_annotator_B.annotate(frame, detections)
+        frame = label_annotator_B.annotate(frame, detections, labels)
+        frame = trace_annotator_B.annotate(frame, detections)
 
         # Temps vidéo en secondes
-        video_time = round(frame_index / fps, 2)
-        current_interval = int(video_time // 5)
+        video_time_B = round(frame_index_B / fps_B, 2)
+        current_interval_B = int(video_time_B // 5)
 
-        if current_interval != last_interval:
+        if current_interval_B != last_interval_B:
             # on met aussi le flag d'alerte dans la queue
-           detection_queue.put({"time": video_time, "count": chariot_count, "alert": alert, "message": alert_message})
+           detection_queue_B.put({"time": video_time_B, "count": chariot_count_B, "alert": alert, "message": alert_message})
 
-           last_interval = current_interval
+           last_interval_B = current_interval_B
 
-        ret, buffer = cv2.imencode('.jpg', frame)
-        frame_bytes = buffer.tobytes()
+        ret_B, buffer_B = cv2.imencode('.jpg', frame)
+        frame_bytes_B = buffer_B.tobytes()
 
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes_B + b'\r\n')
     
 @app.route('/video_feedB')
 def video_feedB():
@@ -513,178 +513,86 @@ def video_feedB():
 
 @app.route('/detection_dataB')
 def detection_dataB():
-    data = []
-    while not detection_queue.empty():
-        data.append(detection_queue.get())
-    return jsonify(data)   
-
-
-#----------------------------------------------------------------------
-
-video_path_C = r'C:\Users\yasmi\Documents\dash\static\video\zoneC.mp4'
-cap = cv2.VideoCapture(video_path_C)
-
-fps = cap.get(cv2.CAP_PROP_FPS)
-frame_index = 0
-tracker = sv.ByteTrack()
-
-box_annotator = sv.BoundingBoxAnnotator()
-label_annotator = sv.LabelAnnotator()
-trace_annotator = sv.TraceAnnotator()
-
-detection_queue = Queue()
-initial_count = None          # mémorise le nombre de chariots au t = 0 s
-
-# Nouvelle variable pour l'agrégation
-last_interval = -1
-def generate_framesC():
-    global frame_index, last_interval, initial_count
-
-    while cap.isOpened():
-        success, frame = cap.read()
-        if not success:
-            break
-
-        frame_index += 1
-        results = model(frame)[0]
-
-        detections = sv.Detections.from_ultralytics(results)
-        detections = detections[detections.confidence > 0.4]
-        detections = tracker.update_with_detections(detections)
-        
-        # nombre de chariots détectés sur cette frame
-        chariot_count = sum(
-            1 for cid in detections.class_id if results.names[cid].lower() == "0"
-        )
-        
-        # Initialisation du comptage
-       # Initialisation du comptage
-        if initial_count is None and chariot_count > 0:
-            initial_count = chariot_count
-            print(f"[INFO] Initial count fixé à {initial_count}")
-
-         # ---------- calcul de l'alerte ----------
-        alert = False
-        alert_message = ""
-        if chariot_count <= initial_count*0.5:
-            alert = True
-            alert_message = f"Alerte Alerte: pile presque vide ! Il reste {chariot_count} chariot{'s' if chariot_count > 1 else ''}."
-            print(alert_message)
-
-        labels = [
-            f"#{tracker_id} {results.names[class_id]}"
-            for class_id, tracker_id in zip(detections.class_id, detections.tracker_id)
-        ]
-
-        frame = box_annotator.annotate(frame, detections)
-        frame = label_annotator.annotate(frame, detections, labels)
-        frame = trace_annotator.annotate(frame, detections)
-
-        # Temps vidéo en secondes
-        video_time = round(frame_index / fps, 2)
-        current_interval = int(video_time // 5)
-
-        if current_interval != last_interval:
-            # on met aussi le flag d'alerte dans la queue
-           detection_queue.put({"time": video_time, "count": chariot_count, "alert": alert, "message": alert_message})
-
-           last_interval = current_interval
-
-        ret, buffer = cv2.imencode('.jpg', frame)
-        frame_bytes = buffer.tobytes()
-
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-    
-@app.route('/video_feedC')
-def video_feedC():
-    return Response(generate_framesC(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/detection_dataC')
-def detection_dataC():
-    data = []
-    while not detection_queue.empty():
-        data.append(detection_queue.get())
-    return jsonify(data)   
-
+    dataB = []
+    while not detection_queue_B.empty():
+        dataB.append(detection_queue_B.get())
+    return jsonify(dataB)   
 
 #----------------------------------------------------------------------
 
 video_path_D = r'C:\Users\yasmi\Documents\dash\static\video\zoneD.mp4'
-cap = cv2.VideoCapture(video_path_D)
+cap_D = cv2.VideoCapture(video_path_D)
 
-fps = cap.get(cv2.CAP_PROP_FPS)
-frame_index = 0
-tracker = sv.ByteTrack()
+fps_D = cap_D.get(cv2.CAP_PROP_FPS)
+frame_index_D = 0
+tracker_D = sv.ByteTrack()
 
-box_annotator = sv.BoundingBoxAnnotator()
-label_annotator = sv.LabelAnnotator()
-trace_annotator = sv.TraceAnnotator()
-
-detection_queue = Queue()
-initial_count = None          # mémorise le nombre de chariots au t = 0 s
+box_annotator_D = sv.BoundingBoxAnnotator()
+label_annotator_D = sv.LabelAnnotator()
+trace_annotator_D = sv.TraceAnnotator()
+detection_queue_D = Queue()
+initial_count_D = None          # mémorise le nombre de chariots au t = 0 s
 
 # Nouvelle variable pour l'agrégation
-last_interval = -1
+last_interval_D = -1
 def generate_framesD():
-    global frame_index, last_interval, initial_count
+    global frame_index_D, last_interval_D, initial_count_D
 
-    while cap.isOpened():
-        success, frame = cap.read()
+    while cap_D.isOpened():
+        success, frame = cap_D.read()
         if not success:
             break
 
-        frame_index += 1
-        results = model(frame)[0]
+        frame_index_D += 1
+        results_D = model(frame)[0]
 
-        detections = sv.Detections.from_ultralytics(results)
+        detections = sv.Detections.from_ultralytics(results_D)
         detections = detections[detections.confidence > 0.4]
-        detections = tracker.update_with_detections(detections)
+        detections = tracker_D.update_with_detections(detections)
         
         # nombre de chariots détectés sur cette frame
-        chariot_count = sum(
-            1 for cid in detections.class_id if results.names[cid].lower() == "0"
+        chariot_count_D = sum(
+            1 for cid in detections.class_id if results_D.names[cid].lower() == "0"
         )
         
         # Initialisation du comptage
        # Initialisation du comptage
-        if initial_count is None and chariot_count > 0:
-            initial_count = chariot_count
-            print(f"[INFO] Initial count fixé à {initial_count}")
+        if initial_count_D is None and chariot_count_D > 0:
+            initial_count_D = chariot_count_D
+            print(f"[INFO] Initial count fixé à {initial_count_D}")
 
          # ---------- calcul de l'alerte ----------
         alert = False
         alert_message = ""
-        if chariot_count <= initial_count*0.5:
+        if chariot_count_D <= initial_count_D*0.5:
             alert = True
-            alert_message = f"Alerte Alerte: pile presque vide ! Il reste {chariot_count} chariot{'s' if chariot_count > 1 else ''}."
+            alert_message = f"Alerte Alerte: pile presque vide ! Il reste {chariot_count_D} chariot{'s' if chariot_count_D > 1 else ''}."
             print(alert_message)
 
         labels = [
-            f"#{tracker_id} {results.names[class_id]}"
+            f"#{tracker_id} {results_D.names[class_id]}"
             for class_id, tracker_id in zip(detections.class_id, detections.tracker_id)
         ]
 
-        frame = box_annotator.annotate(frame, detections)
-        frame = label_annotator.annotate(frame, detections, labels)
-        frame = trace_annotator.annotate(frame, detections)
+        frame = box_annotator_D.annotate(frame, detections)
+        frame = label_annotator_D.annotate(frame, detections, labels)
+        frame = trace_annotator_D.annotate(frame, detections)
 
         # Temps vidéo en secondes
-        video_time = round(frame_index / fps, 2)
-        current_interval = int(video_time // 5)
+        video_time_D = round(frame_index_D / fps_D, 2)
+        current_interval_D = int(video_time_D // 5)
 
-        if current_interval != last_interval:
+        if current_interval_D != last_interval_D:
             # on met aussi le flag d'alerte dans la queue
-           detection_queue.put({"time": video_time, "count": chariot_count, "alert": alert, "message": alert_message})
+           detection_queue_D.put({"time": video_time_D, "count": chariot_count_D, "alert": alert, "message": alert_message})
 
-           last_interval = current_interval
+           last_interval_D = current_interval_D
 
-        ret, buffer = cv2.imencode('.jpg', frame)
-        frame_bytes = buffer.tobytes()
+        ret_D, buffer_D = cv2.imencode('.jpg', frame)
+        frame_bytes_D = buffer_D.tobytes()
 
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes_D + b'\r\n')
     
 @app.route('/video_feedD')
 def video_feedD():
@@ -693,10 +601,98 @@ def video_feedD():
 
 @app.route('/detection_dataD')
 def detection_dataD():
-    data = []
-    while not detection_queue.empty():
-        data.append(detection_queue.get())
-    return jsonify(data) 
+    dataD = []
+    while not detection_queue_D.empty():
+        dataD.append(detection_queue_D.get())
+    return jsonify(dataD) 
+
+#----------------------------------------------------------------------
+
+video_path_C = r'C:\Users\yasmi\Documents\dash\static\video\zoneC.mp4'
+cap_C = cv2.VideoCapture(video_path_C)
+
+fps_C = cap_C.get(cv2.CAP_PROP_FPS)
+frame_index_C = 0
+tracker_C = sv.ByteTrack()
+
+box_annotator_C = sv.BoundingBoxAnnotator()
+label_annotator_C = sv.LabelAnnotator()
+trace_annotator_C = sv.TraceAnnotator()
+detection_queue_C = Queue()
+initial_count_C = None          # mémorise le nombre de chariots au t = 0 s
+
+# Nouvelle variable pour l'agrégation
+last_interval_C = -1
+def generate_framesC():
+    global frame_index_C, last_interval_C, initial_count_C
+
+    while cap_C.isOpened():
+        success, frame = cap_C.read()
+        if not success:
+            break
+
+        frame_index_C += 1
+        results_C = model(frame)[0]
+
+        detections = sv.Detections.from_ultralytics(results_C)
+        detections = detections[detections.confidence > 0.4]
+        detections = tracker_C.update_with_detections(detections)
+        
+        # nombre de chariots détectés sur cette frame
+        chariot_count_C = sum(
+            1 for cid in detections.class_id if results_C.names[cid].lower() == "0"
+        )
+        
+        # Initialisation du comptage
+       # Initialisation du comptage
+        if initial_count_C is None and chariot_count_C > 0:
+            initial_count_C = chariot_count_C
+            print(f"[INFO] Initial count fixé à {initial_count_C}")
+
+         # ---------- calcul de l'alerte ----------
+        alert = False
+        alert_message = ""
+        if chariot_count_C <= initial_count_C*0.5:
+            alert = True
+            alert_message = f"Alerte Alerte: pile presque vide ! Il reste {chariot_count_C} chariot{'s' if chariot_count_C > 1 else ''}."
+            print(alert_message)
+
+        labels = [
+            f"#{tracker_id} {results_C.names[class_id]}"
+            for class_id, tracker_id in zip(detections.class_id, detections.tracker_id)
+        ]
+
+        frame = box_annotator_C.annotate(frame, detections)
+        frame = label_annotator_C.annotate(frame, detections, labels)
+        frame = trace_annotator_C.annotate(frame, detections)
+
+        # Temps vidéo en secondes
+        video_time_C = round(frame_index_C / fps_C, 2)
+        current_interval_C = int(video_time_C // 5)
+
+        if current_interval_C != last_interval_C:
+            # on met aussi le flag d'alerte dans la queue
+           detection_queue_C.put({"time": video_time_C, "count": chariot_count_C, "alert": alert, "message": alert_message})
+
+           last_interval_C = current_interval_C
+
+        ret_C, buffer_C = cv2.imencode('.jpg', frame)
+        frame_bytes_C = buffer_C.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes_C + b'\r\n')
+    
+@app.route('/video_feedC')
+def video_feedC():
+    return Response(generate_framesC(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/detection_dataC')
+def detection_dataC():
+    dataC = []
+    while not detection_queue_C.empty():
+        dataC.append(detection_queue_C.get())
+    return jsonify(dataC)  
 
 
 if __name__ == '__main__':
