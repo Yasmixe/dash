@@ -94,32 +94,31 @@
 
         </div>
         <div class="cardcontent2">
-        <canvas id="bar-chart" height="100" width="100"></canvas>
-          
-          
-        </div>
-        <div class="cardcontent3">
-          
-          <canvas id="line-chart" height="100" width="100"></canvas>
-
+        <canvas id="line-chart" height="100" width="100"></canvas>
         </div>
 
-        <div class="cardcontent4">
-          <div id="top-zone-vide-info" ></div>
-
-        </div>
-        <div class="cardcontent5">
-          <!--  <canvas id="bar-chart" height="220" width="120"></canvas>  -->
-          
-         <canvas id="bar-chart2" ></canvas>
         
-       </div>
-       <div class="cardcontent6">
-       <!--  <canvas id="bar-chart" height="220" width="120"></canvas>  -->
        
-      <p>ici donnee sur la pile </p>
+   <!-- Conteneur du contenu dynamique -->
+<div id="calendar-content" style="margin-top: 20px;">
 
-     </div>
+  <!-- Image du graphe -->
+  <div id="graph-container" style="margin-bottom: 20px;">
+    <h4>Graphique du jour sélectionné</h4>
+    <img id="graph-image" src="" alt="Graphique" style="max-width: 100%; display: none;" width="600px"/>
+  </div>
+
+  <!-- Vidéo -->
+  <div id="video-container">
+    <h4>Vidéo du jour sélectionné</h4>
+    <video id="video-player" width="540" height="360" controls style="display: none;">
+      <source id="video-source" src="" type="video/mp4" />
+      Votre navigateur ne supporte pas la lecture de vidéos.
+    </video>
+  </div>
+
+</div>
+
       </main>
     </div>
   </main>
