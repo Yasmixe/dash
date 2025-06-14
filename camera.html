@@ -43,57 +43,67 @@
       <main class="z">
          <div class="cards-container">
         <!-- Card 1 -->
-        <div class="card" data-zone="Zone A" data-camera-id="1">
+         <a href="/zoneA">
+            <div class="card" data-zone="Zone A" data-camera-id="1" >
             <video autoplay loop muted>
-                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+                <source  src="{{ url_for('static', filename='videos/zone A/videos/1.mp4') }}" type="video/mp4">
             </video>
             <div class="card-info">
                 <h3>Camera 1</h3>
-                <p class="description">Cliquer ici pour en savoir plus</p>
+                <p class="description">Cliquer ici pour en savoir plus</p>  
             </div>
         </div>
-
-        <!-- Répétez pour les 6 cartes (modifiez data-zone et le contenu) -->
+         </a>
+       
         <!-- Card 2 -->
-        <div class="card" data-zone="Zone B" data-camera-id="2">
+        <a href="/zoneB">
+          <div class="card" data-zone="Zone B" data-camera-id="2" onclick="showProcessedData('zoneB')">
             <video autoplay loop muted>
-                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+                <source  src="{{ url_for('static', filename='videos/zone A/videos/5.mp4') }}" type="video/mp4">
             </video>
             <div class="card-info">
                 <h3>Camera 2</h3>
                 <p class="description">Cliquer ici pour en savoir plus</p>
             </div>
-        </div>
-        <div class="card" data-zone="Zone C" data-camera-id="3">
+          </div>
+         </a>
+        
+       <a href="/zoneC">
+         <div class="card" data-zone="Zone C" data-camera-id="3" onclick="showProcessedData('zoneC')">
             <video autoplay loop muted>
-                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+                <source  src="{{ url_for('static', filename='videos/zone A/videos/8.mp4') }}" type="video/mp4">
             </video>
             <div class="card-info">
                 <h3>Camera 3</h3>
                 <p class="description">Cliquer ici pour en savoir plus</p>
             </div>
         </div>
-        <div class="card" data-zone="Zone D" data-camera-id="4">
+       </a>
+        <a href="/zoneD">
+            <div class="card" data-zone="Zone D" data-camera-id="4" onclick="showProcessedData('zoneD')">
             <video autoplay loop muted>
-                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+                <source  src="{{ url_for('static', filename='videos/zone A/videos/10.mp4') }}" type="video/mp4">
             </video>
             <div class="card-info">
                 <h3>Camera 4</h3>
                 <p class="description">Cliquer ici pour en savoir plus</p>
             </div>
         </div>
-        <div class="card" data-zone="Zone E" data-camera-id="5">
+        </a>
+       
+
+        <div class="card" data-zone="Zone E" data-camera-id="5" onclick="showProcessedData('zoneE')">
             <video autoplay loop muted>
-                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+                <source  src="{{ url_for('static', filename='videos/zone A/videos/11.mp4') }}" type="video/mp4">
             </video>
             <div class="card-info">
                 <h3>Camera 5</h3>
                 <p class="description">Cliquer ici pour en savoir plus</p>
             </div>
         </div>
-        <div class="card" data-zone="Zone F" data-camera-id="6">
+        <div class="card" data-zone="Zone F" data-camera-id="6" onclick="showProcessedData('zoneF')">
             <video autoplay loop muted>
-                <source  src="{{ url_for('static', filename='video/video1.mp4') }}" type="video/mp4">
+                <source  src="{{ url_for('static', filename='videos/zone A/videos/12.mp4') }}" type="video/mp4">
             </video>
             <div class="card-info">
                 <h3>Camera 6</h3>
@@ -102,6 +112,11 @@
         </div>
         
     </div>
+    <div id="processedDisplay" style="display: none; margin-top: 20px;">
+    <h2 id="zoneTitle"></h2>
+    <video id="processedVideo" controls style="max-width: 100%;"></video>
+    
+</div>
 
    <!-- Modal -->
 <div class="modal">

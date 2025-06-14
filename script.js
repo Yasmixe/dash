@@ -34,7 +34,7 @@ function closeAllSubMenus(){
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function() {
   // Variables d'état
-  let currentDate = new Date(2025, 4, 8); // Mai 2025 (les mois sont 0-indexés)
+  let currentDate = new Date(2025, 5, 2); // Mai 2025 (les mois sont 0-indexés)
   
   // Éléments DOM
   const miniCalendarMonth = document.getElementById('mini-calendar-month');
@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (httpRequest2.readyState === 4) {
             if (httpRequest2.status === 200) {
                 const data = JSON.parse(httpRequest2.responseText);
-                updateBarChart(data); // met à jour le graphique
+                update_BarChart(data); // met à jour le graphique
             } else {
                 console.error("Erreur de récupération des données pour", selectedDateStr);
             }
@@ -204,8 +204,8 @@ document.addEventListener("DOMContentLoaded", function() {
         if (httpRequest3.readyState === 4) {
             if (httpRequest3.status === 200) {
                 const data = JSON.parse(httpRequest3.responseText);
-                console.log("Data brute reçue :", data);  // AJOUTE CECI
-                update_LineAlertesParZone(data); // met à jour le graphique
+                console.log("pie pie:", data);  // AJOUTE CECI
+                update_pie(data); // met à jour le graphique
             } else {
                 console.error("Erreur de récupération des données pour", selectedDateStr);
             }
@@ -219,8 +219,7 @@ document.addEventListener("DOMContentLoaded", function() {
           if (httpRequest4.readyState === 4) {
               if (httpRequest4.status === 200) {
                   const data = JSON.parse(httpRequest4.responseText);
-                 
-                  updateBarChart2(data); // met à jour le graphique
+                  update_Line(data); // met à jour le graphique
               } else {
                   console.error("Erreur de récupération des données pour", selectedDateStr);
               }
@@ -228,69 +227,35 @@ document.addEventListener("DOMContentLoaded", function() {
       };
       httpRequest4.send();
 //----------------------------------------------------------------------------------------------------------------------------------------------
-      const httpRequest5 = new XMLHttpRequest();
+     const httpRequest5 = new XMLHttpRequest();
       httpRequest5.open('GET', `/api/data5?date=${selectedDateStr}`);
       httpRequest5.onreadystatechange = function () {
-      if (httpRequest5.readyState === 4) {
-        if (httpRequest5.status === 200) {
-            const data = JSON.parse(httpRequest5.responseText);
+          if (httpRequest5.readyState === 4) {
+              if (httpRequest5.status === 200) {
+                  const data = JSON.parse(httpRequest5.responseText);
+                  update_Line_deux(data); // met à jour le graphique
+              } else {
+                  console.error("Erreur de récupération des données pour", selectedDateStr);
+              }
+          }
+      };
+      httpRequest5.send();
 
-            if (data.length > 0) {
-                const topZone = data[0];
-                const text = `<p><strong>Zone avec le plus de chariots vides :</strong> ${topZone.zone} (${topZone.nombre_vide} chariots vides)</p>`;
-                document.getElementById("top-zone-vide-info").innerHTML = text;
-            } else {
-                document.getElementById("top-zone-vide-info").innerHTML = "Aucune donnée disponible.";
-            }
-        } else {
-            console.error("Erreur de récupération des données pour", selectedDateStr);
-        }
-    }
-};
-httpRequest5.send();
 
-const httpRequestMedia = new XMLHttpRequest();
-httpRequestMedia.open('GET', `/api/media?date=${selectedDateStr}`);
-httpRequestMedia.onreadystatechange = function() {
-    if (httpRequestMedia.readyState === 4) {
-        if (httpRequestMedia.status === 200) {
-            try {
-                const mediaData = JSON.parse(httpRequestMedia.responseText);
-                console.log("Media data received:", mediaData); // Debug
-                
-                const graphImage = document.getElementById("graph-image");
-                const videoSource = document.getElementById("video-source");
-                const videoPlayer = document.getElementById("video-player");
-                
-                // Gestion de l'image
-                if (mediaData.image) {
-                    graphImage.src = mediaData.image;
-                    graphImage.style.display = "block";
-                    console.log("Image path set to:", mediaData.image); // Debug
-                } else {
-                    graphImage.style.display = "none";
-                    console.log("No image available for this date"); // Debug
-                }
-                
-                // Gestion de la vidéo
-                if (mediaData.video) {
-                    videoSource.src = mediaData.video;
-                    videoPlayer.load();
-                    videoPlayer.style.display = "block";
-                    console.log("Video path set to:", mediaData.video); // Debug
-                } else {
-                    videoPlayer.style.display = "none";
-                    console.log("No video available for this date"); // Debug
-                }
-            } catch (e) {
-                console.error("Error parsing JSON:", e);
-            }
-        } else {
-            console.error("Erreur lors de la récupération des médias:", httpRequestMedia.status, httpRequestMedia.statusText);
-        }
-    }
-};
-httpRequestMedia.send();
+      const httpRequest6 = new XMLHttpRequest();
+      httpRequest6.open('GET', `/api/data6?date=${selectedDateStr}`);
+      httpRequest6.onreadystatechange = function () {
+          if (httpRequest6.readyState === 4) {
+              if (httpRequest6.status === 200) {
+                  const data = JSON.parse(httpRequest6.responseText);
+                  updatebare(data); // met à jour le graphique
+              } else {
+                  console.error("Erreur de récupération des données pour", selectedDateStr);
+              }
+          }
+      };
+      httpRequest6.send();
+
 
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -300,114 +265,62 @@ httpRequestMedia.send();
 //---------------------------------------------------my charts: chart.js---------------------------------------------------------------------------------------------------
 let myBarChart;
 
-function updateBarChart(data) {
-    const zones = [...new Set(data.map(item => item.zone))];
-    const classes = ["chariot vide", "chariot rempli"];
+function updatebare(data) {
+   const zones = data.map(item => item.zone);
+                const maxChariots = data.map(item => item.max_chariots);
+                const minChariots = data.map(item => item.min_chariots);
 
-    const datasetByClasse = classes.map((classe, index) => {
-        const color = classe === "chariot vide" ? "#5d5ded" : "#ffa707";
-
-        return {
-            label: classe,
-            data: zones.map(zone => {
-                const entry = data.find(d => d.zone === zone && d.classe === classe);
-                return entry ? entry.nombre_de_chariots : 0;
-            }),
-            backgroundColor: color
-        };
-    });
-
-    if (myBarChart) {
-        myBarChart.destroy();
-    }
-
-    const ctx = document.getElementById('bar-chart');
-    myBarChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: zones,
-            datasets: datasetByClasse
-        },
-        options: {
-            responsive: true,
-           
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Nombre de chariots (vides/remplis) par zone'
-                },
-                legend: {
-                    display: false,
+                const ctx = document.getElementById('chariotChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: zones,
+                        datasets: [
+                            {
+                                label: 'Max chariots',
+                                data: maxChariots,
+                                backgroundColor: '#f84d54'
+                            },
+                            {
+                                label: 'Min chariots',
+                                data: minChariots,
+                                backgroundColor: '#5d5ded'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Max vs Min des chariots détectés par zone'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Nombre de chariots'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Zone'
+                                }
+                            }
+                        }
+                    }
+                });
                 }
-            },
-            scales: {
-                x: {
-                    stacked: true
-                },
-                y: {
-                    beginAtZero: true,
-                    stacked: true
-                }
-            }
-        }
-    });
-}
 
-let myBarChart2
+
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-function updateBarChart2(data) {
-  const zones = [...new Set(data.map(item => item.zone))];
-  const alertes = [...new Set(data.map(item => item.alerte))];
-
-  const colors = {
-      "pile presque vide": "#5d5ded",
-      "chariot abandonné": "#ffa707",
-      "chariot defectueux": "#ff4d4d"
-  };
-
-  const datasets = alertes.map(alerte => ({
-      label: alerte,
-      data: zones.map(zone => {
-          const match = data.find(d => d.zone === zone && d.alerte === alerte);
-          return match ? match.nombre : 0;
-      }),
-      backgroundColor: colors[alerte] || '#999999'
-  }));
-
-  if (myBarChart2) {
-      myBarChart2.destroy();
-  }
-
-  const ctx = document.getElementById('bar-chart2');
-  myBarChart2 = new Chart(ctx, {
-      type: 'bar',
-      data: {
-          labels: zones,
-          datasets: datasets
-      },
-      options: {
-          responsive: true,
-          plugins: {
-              title: {
-                  display: true,
-                  text: 'Nombre d’alertes par type et par zone'
-              },
-              legend: {
-                  display:false
-              }
-          },
-          scales: {
-              x: {
-                  stacked: true
-              },
-              y: {
-                  beginAtZero: true,
-                  stacked: true
-              }
-          }
-      }
-  });
-}
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -458,25 +371,188 @@ window.zoneChart = new Chart(ctx, {
   }
 });
 }
+
+
+function update_BarChart(data_JSON) {
+    // Extraire les labels (zones) et les valeurs (taux d'alertes)
+    var labels = data_JSON.map(item => item.zone);
+    var values = data_JSON.map(item => item.alerte_rate || 0); // Utiliser 0 si alerte_rate est undefined
+
+    // Définir les couleurs
+    var colors = [
+        '#f84d54',   // Rouge
+        '#5d5ded',   // Bleu
+        'rgba(255, 206, 86, 0.7)',   // Jaune
+        '#2fce4d',   // Vert menthe
+        'rgba(153, 102, 255, 0.7)',  // Violet
+        '#ffa707'    // Orange
+    ];
+
+    // Récupérer le contexte du canvas
+    var ctx = document.getElementById("bar-chart");
+    if (!ctx) {
+        console.error("Canvas 'doughnut-chart2' non trouvé.");
+        return;
+    }
+
+    // Détruire l'ancien graphique s'il existe
+    if (window.barChart) {
+        window.barChart.destroy();
+    }
+
+    // Créer un nouveau graphique en barres
+    window.barChart = new Chart(ctx, {
+        type: 'bar', // Type changé en bar chart
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Taux d\'alertes (%)', // Légende pour les barres
+                data: values,
+                backgroundColor: colors.slice(0, labels.length), // Limiter les couleurs au nombre de zones
+                borderColor: colors.slice(0, labels.length).map(color => color.replace('0.7', '1')), // Bordures plus opaques
+                borderWidth: 1,
+                borderRadius: 5 // Coins arrondis pour les barres
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: "Taux d'alertes par zone (%)",
+                    font: {
+                        size: 16
+                    }
+                },
+                legend: {
+                    display: true // Légende affichée pour identifier les barres
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            let value = context.raw || 0;
+                            return `${label}: ${value.toFixed(2)}%`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Taux d\'alertes (%)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Zones'
+                    }
+                }
+            }
+        }
+    });
+}
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function update_LineAlertesParZone(data_JSON) {
+function update_pie(data_JSON) {
+    // Vérifier les données reçues
+    console.log("Données JSON:", data_JSON);
+
+    // Extraire labels et valeurs
+    var labels = data_JSON.map(item => item.zone);
+    var values = data_JSON.map(item => {
+        const value = Number(item.nombre_alertes);
+        if (isNaN(value)) {
+            console.warn("Valeur non numérique pour", item.zone, ": ", item.nombre_alertes);
+            return 0; // Remplacer par 0 si non numérique
+        }
+        return value;
+    });
+
+    console.log("Labels:", labels);
+    console.log("Values:", values);
+
+    // Vérifier et obtenir le contexte du canvas
+    const canvas = document.getElementById("pie-chart");
+    if (!canvas) {
+        console.error("Canvas avec ID 'pie-chart' non trouvé dans le DOM.");
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error("Impossible d'obtenir le contexte 2D pour 'pie-chart'.");
+        return;
+    }
+
+    // Détruire l'ancien graphique s'il existe
+    if (window.alertesZoneChart) {
+        window.alertesZoneChart.destroy();
+    }
+
+    // Créer le nouveau graphique
+    window.alertesZoneChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Alertes par Zone',
+                data: values,
+                backgroundColor: [
+                    '#f84d54',   // Rouge
+                    '#5d5ded',   // Bleu
+                    'rgba(255, 206, 86, 0.7)', // Jaune
+                    '#2fce4d',   // Vert menthe
+                    'rgba(153, 102, 255, 0.7)', // Violet
+                    '#ffa707'    // Orange
+                ],
+                borderWidth: 1,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Nombre d\'alertes par zone'
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Vérifier si le graphique a été créé
+    if (!window.alertesZoneChart) {
+        console.error("Échec de la création du graphique.");
+    }
+}
+
+function update_Line(data_JSON) {
   console.log(data_JSON)
-  const labels = data_JSON.map(item => item.zone);
-  const values = data_JSON.map(item => Number(item.nombre_alertes));
+  const labels = data_JSON.map(item => item.date);
+  const values = data_JSON.map(item => item.alerte_rate);
   console.log("Labels:", labels);
   console.log("Values:", values);
   const ctx = document.getElementById("line-chart");
-  if (window.alertesZoneChart) {
-    window.alertesZoneChart.destroy();
+  if (window.alertesZoneChart2) {
+    window.alertesZoneChart2.destroy();
   }
 
-  window.alertesZoneChart = new Chart(ctx, {
+  window.alertesZoneChart2 = new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
       datasets: [{
-        label: 'Alertes par Zone',
+        label: 'Correlation d\'alertes',
         data: values,
         borderColor: '#f84d54',
         backgroundColor: 'rgba(248, 77, 84, 0.2)',
@@ -512,13 +588,13 @@ function update_LineAlertesParZone(data_JSON) {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Nombre dalertes'
+            text: 'correlation d\'alertes (%)'
           }
         },
         x: {
           title: {
             display: true,
-            text: 'Zones'
+            text: 'Dates'
           }
         }
       }
@@ -526,6 +602,85 @@ function update_LineAlertesParZone(data_JSON) {
   });
 
 
+}
+
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+function update_Line_deux(data_JSON) {
+  console.log(data_JSON);
+  var labels = data_JSON.map(item => item.date);
+  var values = data_JSON.map(item => item.max_alertes);
+
+  const ctx = document.getElementById("line-chart_deux");
+  if (window.alertesZoneChart3) {
+    window.alertesZoneChart3.destroy();
+  }
+
+  window.alertesZoneChart3 = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Alertes maximales par jour',
+        data: values,
+        borderColor: '#5d5ded',
+        
+        tension: 0.3,
+        pointBackgroundColor: '#5d5ded',
+        pointRadius: 5,
+        fill: true
+      }]
+    },
+    options: {
+      animations: {
+        tension: {
+          duration: 1000,
+          easing: 'linear',
+          from: 1,
+          to: 0,
+          loop: true
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Zone avec le plus d\'alertes par jour'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const index = context.dataIndex;
+              const zone = data_JSON[index].zone_max_alertes;
+              const value = context.formattedValue;
+              return `Zone: ${zone} — Alertes: ${value}`;
+            }
+          }
+        },
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Nombre d\'alertes'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Dates'
+          }
+        }
+      }
+    }
+  });
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -581,4 +736,10 @@ async function fetchDetections(cameraId) {
     li.textContent = `${className}: ${data.class_counts[className]}`;
     list.appendChild(li);
   }
+}
+
+
+
+function redirectToZone(zoneName) {
+    window.location.href = `/zone/${zoneName.toLowerCase().replace(' ', '')}`;
 }

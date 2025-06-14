@@ -11,12 +11,9 @@
 <body>
   <nav id="sidebar">
     <ul>
-      <li>
+      <li id="log">
         <span class="logo">Airport Dashboard</span>
-        <button onclick=toggleSidebar() id="toggle-btn">
-          <img src="{{ url_for('static', filename='images/left.png') }}" alt="icon">
-
-        </button>
+       
       </li>
       <li class="active">
         <a href="/camera">
@@ -32,9 +29,9 @@
         </a>
       </li>
       <li>
-        <a href="/stats">
+        <a href="/realtime">
           <img src="{{ url_for('static', filename='images/stats.png') }}" alt="icon">
-          <span>Stats</span>
+          <span>Real Time Detection</span>
         </a>
       </li>
       
@@ -94,30 +91,26 @@
 
         </div>
         <div class="cardcontent2">
-        <canvas id="line-chart" height="100" width="100"></canvas>
+        <canvas id="pie-chart" ></canvas>
         </div>
-
+        <div class="cardcontent3">
+          <canvas id="bar-chart" height="100" width="100"></canvas>
+        </div>
+        <div class="cardcontent4">
+         <canvas id="line-chart" ></canvas>
+        </div>
+      
+        <div class="cardcontent7">
+          <canvas id="chariotChart" height="100" width="100"  ></canvas>
+        </div>
+        <div class="cardcontent6">
+          <canvas id="line-chart_deux" ></canvas>
+        </div>
+        
         
        
-   <!-- Conteneur du contenu dynamique -->
-<div id="calendar-content" style="margin-top: 20px;">
 
-  <!-- Image du graphe -->
-  <div id="graph-container" style="margin-bottom: 20px;">
-    <h4>Graphique du jour sélectionné</h4>
-    <img id="graph-image" src="" alt="Graphique" style="max-width: 100%; display: none;" width="600px"/>
-  </div>
 
-  <!-- Vidéo -->
-  <div id="video-container">
-    <h4>Vidéo du jour sélectionné</h4>
-    <video id="video-player" width="540" height="360" controls style="display: none;">
-      <source id="video-source" src="" type="video/mp4" />
-      Votre navigateur ne supporte pas la lecture de vidéos.
-    </video>
-  </div>
-
-</div>
 
       </main>
     </div>
